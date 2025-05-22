@@ -158,7 +158,7 @@ internal class MDCurrencyTextFieldImpl: NSObject, UITextFieldDelegate {
         
         switch (numberComponents.integer.count, numberComponents.fraction.count) {
         case (1...formatter.maximumIntegerDigits, 0...formatter.maximumFractionDigits):
-            if value == decimal {
+            if value == decimal && textField.text != "" {
                 return true // allow the change
             }
             setValue(textField: textField, decimal: decimal)
