@@ -158,6 +158,13 @@ internal class MDCurrencyTextFieldImpl: NSObject, UITextFieldDelegate {
         
         switch (numberComponents.integer.count, numberComponents.fraction.count) {
         case (1...formatter.maximumIntegerDigits, 0...formatter.maximumFractionDigits):
+            if decimalNumberString.contains(".") && value > decimal {
+                if let textField = (textField as? MDCurrencyTextField2) {
+                    value = decimal
+                    (forwardingDelegate as? MDCurrencyTextFieldDelegate2)?.textField(textField, didChange: value)
+                    return true // allow deletion of 10.0001 decimals without reseting the textField.text to 10
+                }
+            }
             if value == decimal && textField.text != "" {
                 return true // allow the change
             }
@@ -174,6 +181,10 @@ internal class MDCurrencyTextFieldImpl: NSObject, UITextFieldDelegate {
             return false
         }
         textField.text = formattedString(from: number)
+        DispatchQueue.main.async {  // reset the cursor after pasting
+            self.resetCursor(textField: textField)
+        }
+        
         return false
     }
     
